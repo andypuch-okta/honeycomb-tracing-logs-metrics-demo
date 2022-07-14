@@ -6,12 +6,14 @@ const client = redis.createClient({ url: process.env.REDIS_HOST });
 
 const models = require("./models");
 
+const opentelemetry = require('@opentelemetry/api');
 const express = require("express");
 const http = require("http");
 const app = express();
 
 app.set("client", client);
 app.set("models", models);
+app.set("tracer", opentelemetry.trace.getTracer("my-service-tracer"));
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -32,7 +34,12 @@ function sleep(ms) {
 app.get("/", async (req, res) => {
   let k, data;
 
+  let activeSpan = opentelemetry.trace.getSpan(opentelemetry.context.active());
+  activeSpan.setAttribute("sleep", parseInt(req.query.sleep));
+
+  let span = req.app.get("tracer").startSpan("sleep");
   await sleep(parseInt(req.query.sleep) * 1000);
+  span.end();
 
   try {
     k = await req.app.get("client").get("hello");
