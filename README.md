@@ -40,5 +40,10 @@ Run the docker compose file.
 ### Step 4
 Since there is only one endpoint you can hit it by navigating to `http://localhost`
 
+# Start Load Testing
+### Step 1
+Run the load script and define how many rps you want.
+`./load.sh 5`
+
 
 

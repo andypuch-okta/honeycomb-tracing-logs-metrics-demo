@@ -1,5 +1,5 @@
 {
-  "name": "honeycomb",
+  "name": "honeycomb-tracing-logs-metrics-demo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

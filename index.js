@@ -1,7 +1,7 @@
 /*
- * A very simplified demo of tracing with Honeycomb using
- * Redis, MySQL, adding some attributes and creating new
- * spans. Generating some fake load just to show the concept.
+ * Simplified demo of tracing with Honeycomb using Redis,
+ * MySQL, adding some attributes and creating new spans.
+ * Generating some fake load just to show the concept.
  */
 
 // Import tracing before any other package is imported.
@@ -94,11 +94,12 @@ app.get("/", async (req, res) => {
       cacheItems,
     });
   } catch(e) {
+    // This will get thrown if the databases are not ready and you start load testing.
     res.status(500).send("Something broke!");
   }
 });
 
-// Run api.
+// Run API.
 app.listen(process.env.PORT || 3000, () =>
   console.log("Listening on port 3000.")
 );
