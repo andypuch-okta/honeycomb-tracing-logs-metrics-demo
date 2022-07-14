@@ -50,15 +50,16 @@ app.get("/", async (req, res) => {
   span.end();
 
   try {
-    k = await req.app.get("client").get("hello");
+    k = await req.app.get("client").get("sleep");
 
     if(!k) {
-      k = await req.app.get("client").set("hello", "world");
+      k = await req.app.get("client").set("sleep", parseInt(req.query.sleep));
     }
 
     await req.app.get("models").honeycomb.create({});
 
     data = await req.app.get("models").honeycomb.findAll();
+    activeSpan.setAttribute("num_items", data.length);
   } catch (err) {
     console.log(err);
   }
