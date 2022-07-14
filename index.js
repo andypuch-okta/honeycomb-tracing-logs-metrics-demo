@@ -65,10 +65,7 @@ app.get("/", async (req, res) => {
     span.end();
 
     // Set a record in redis that won't expire and is unique to build the count up.
-    let key = await req.app.get("client").get(activeSpan.spanContext().traceId);
-    if(!key) {
-      key = await req.app.get("client").set(activeSpan.spanContext().traceId, `sleep_${s}`);
-    }
+    await req.app.get("client").set(activeSpan.spanContext().traceId, `sleep_${s}`);
 
     // Create a record in the db to build the count up.
     await req.app.get("models").honeycomb.create({});
