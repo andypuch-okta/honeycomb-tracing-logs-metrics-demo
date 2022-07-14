@@ -1,14 +1,20 @@
+// Import tracing before any other package is imported.
 require("./tracing");
 
+// Packages 
 const bodyParser = require("body-parser");
+const opentelemetry = require('@opentelemetry/api');
+const http = require("http");
+
+// Redis Setup
 const redis = require("redis");
 const client = redis.createClient({ url: process.env.REDIS_HOST });
 
+// MySQL Setup
 const models = require("./models");
 
-const opentelemetry = require('@opentelemetry/api');
+// Express setup
 const express = require("express");
-const http = require("http");
 const app = express();
 
 app.set("client", client);
@@ -27,10 +33,12 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Simple sleep to simulate longer running http calls.
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Endpoint that will call redis, mysql, and generate additional spans.
 app.get("/", async (req, res) => {
   let k, data;
 
@@ -61,6 +69,7 @@ app.get("/", async (req, res) => {
   })
 });
 
+// Run api.
 app.listen(process.env.PORT || 3000, () =>
-  console.log("Listening on port 3000. Try: http://localhost:3000/")
+  console.log("Listening on port 3000.")
 );

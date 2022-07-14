@@ -1,3 +1,4 @@
+// Configure your .env with Honeycomb specific variables. See .env.sample.
 require("dotenv").config();
 
 const { NodeSDK } = require("@opentelemetry/sdk-node");
