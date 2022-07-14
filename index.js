@@ -46,37 +46,49 @@ function sleep(ms) {
 
 // Endpoint that will call redis, mysql, and generate additional spans.
 app.get("/", async (req, res) => {
+  let dbItems, cacheItems;
+  
+  // Check for sleep otherwise 0.
+  let s = parseInt(req.query.sleep);
+  if(isNaN(s)) {
+    s = 0;
+  }
+
   try {
     // Get the active span and set attribute of how long it slept for.
     let activeSpan = opentelemetry.trace.getSpan(opentelemetry.context.active());
-    activeSpan.setAttribute("sleep", parseInt(req.query.sleep));
+    activeSpan.setAttribute("sleep", s);
 
     // Create a new span to show the sleep time in tracing.
     let span = req.app.get("tracer").startSpan("sleep");
-    await sleep(parseInt(req.query.sleep) * 1000);
+    await sleep(s * 1000);
     span.end();
 
     // Set a record in redis that won't expire and is unique to build the count up.
     let key = await req.app.get("client").get(activeSpan.spanContext().traceId);
     if(!key) {
-      key = await req.app.get("client").set(activeSpan.spanContext().traceId, `sleep_${req.query.sleep}`);
+      key = await req.app.get("client").set(activeSpan.spanContext().traceId, `sleep_${s}`);
     }
 
     // Create a record in the db to build the count up.
     await req.app.get("models").honeycomb.create({});
 
     // Get all the records from the db and set an attribute of how many are there.
-    let dbItems = await req.app.get("models").honeycomb.findAll();
+    dbItems = await req.app.get("models").honeycomb.findAll();
     activeSpan.setAttribute("num_mysql_items", dbItems.length);
 
     // Get all the records from redis and set an attribute of how many are there.
-    let cacheItems = await req.app.get("client").keys("*");
+    cacheItems = await req.app.get("client").keys("*");
     activeSpan.setAttribute("num_redis_items", cacheItems.length);
   } catch(e) {
     console.log(e);
   }
 
-    res.status(200);
+  // Calling this via a browser will show you the data in the db and cache.
+  res.status(200).json({
+    dbItems,
+    cacheItems,
+  });
 });
 
 // Run api.
