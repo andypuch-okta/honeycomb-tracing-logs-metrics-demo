@@ -20,6 +20,10 @@ Edit the `CMD` with the following.
 --dataset YOUR_DATASET_HERE
 ```
 
+## Step 4
+Build honeytail.
+`docker build -t honeytail .`
+
 # Running Express Demo
 ### Step 1
 Install depenendencies. 
