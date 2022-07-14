@@ -20,7 +20,7 @@ Edit the `CMD` with the following.
 --dataset YOUR_DATASET_HERE
 ```
 
-## Step 4
+### Step 4
 Build honeytail.
 `docker build -t honeytail .`
 
