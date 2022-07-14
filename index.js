@@ -54,6 +54,18 @@ app.get("/", async (req, res) => {
     s = 0;
   }
 
+  // Simulate a non 200.
+  if(s === 4) {
+    res.status(401).send("Unauthorized!");
+    return;
+  }
+
+  // Simulate a non 200.
+  if(s === 5) {
+    res.status(500).send("Something broke!");
+    return;
+  }
+
   try {
     // Get the active span and set attribute of how long it slept for.
     let activeSpan = opentelemetry.trace.getSpan(opentelemetry.context.active());
