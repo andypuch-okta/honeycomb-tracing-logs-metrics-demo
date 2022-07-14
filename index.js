@@ -46,8 +46,6 @@ function sleep(ms) {
 
 // Endpoint that will call redis, mysql, and generate additional spans.
 app.get("/", async (req, res) => {
-  let dbItems, cacheItems;
-  
   // Check for sleep otherwise 0.
   let s = parseInt(req.query.sleep);
   if(isNaN(s)) {
@@ -83,21 +81,21 @@ app.get("/", async (req, res) => {
     await req.app.get("models").honeycomb.create({});
 
     // Get all the records from the db and set an attribute of how many are there.
-    dbItems = await req.app.get("models").honeycomb.findAll();
+    let dbItems = await req.app.get("models").honeycomb.findAll();
     activeSpan.setAttribute("num_mysql_items", dbItems.length);
 
     // Get all the records from redis and set an attribute of how many are there.
-    cacheItems = await req.app.get("client").keys("*");
+    let cacheItems = await req.app.get("client").keys("*");
     activeSpan.setAttribute("num_redis_items", cacheItems.length);
-  } catch(e) {
-    console.log(e);
-  }
 
-  // Calling this via a browser will show you the data in the db and cache.
-  res.status(200).json({
-    dbItems,
-    cacheItems,
-  });
+    // Calling this via a browser will show you the data in the db and cache.
+    res.status(200).json({
+      dbItems,
+      cacheItems,
+    });
+  } catch(e) {
+    res.status(500).send("Something broke!");
+  }
 });
 
 // Run api.
