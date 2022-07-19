@@ -8,7 +8,7 @@ echo "Rate: $max calls / second"
 echo ""
 
 rando () {
-  rNum=$(( $RANDOM % 5 + 0 ))
+  rNum=$(( $RANDOM % 6 + 0 ))
 }
 
 get () {
